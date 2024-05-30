@@ -33,6 +33,12 @@ public class CodesignConfiguration {
     public String identity = null;
 
     @Parameter
+    public boolean hardened = true;
+
+    @Parameter
+    public String entitlementsFilePath = null ;
+
+    @Parameter
     public List<String> preserveMetadata = new ArrayList<>(Arrays.asList("entitlements"));
 
 }

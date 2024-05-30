@@ -16,14 +16,14 @@
  */
 package de.perdian.maven.plugins.macosappbundler.mojo.impl;
 
-import java.io.File;
-
+import de.perdian.maven.plugins.macosappbundler.mojo.model.CodesignConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.shared.utils.cli.Commandline;
 
-import de.perdian.maven.plugins.macosappbundler.mojo.model.CodesignConfiguration;
+import java.io.File;
+import java.util.Optional;
 
 public class SignatureGenerator {
 
@@ -50,6 +50,12 @@ public class SignatureGenerator {
         if (StringUtils.isNotEmpty(preserveMetadataValue)) {
             codesignCommandLine.createArg().setValue("--preserve-metadata=" + preserveMetadataValue);
         }
+        if (this.getConfiguration().hardened) {
+            codesignCommandLine.createArg().setValue("--options=runtime");
+        }
+        Optional.ofNullable(this.getConfiguration().entitlementsFilePath)
+                .ifPresent(filePath -> codesignCommandLine.createArg().setValue("--entitlements \"" + filePath + "\""));
+
         codesignCommandLine.createArg().setFile(appDirectory);
 
         try {
@@ -68,6 +74,7 @@ public class SignatureGenerator {
     private CodesignConfiguration getConfiguration() {
         return this.configuration;
     }
+
     private void setConfiguration(CodesignConfiguration configuration) {
         this.configuration = configuration;
     }
@@ -75,6 +82,7 @@ public class SignatureGenerator {
     private Log getLog() {
         return this.log;
     }
+
     private void setLog(Log log) {
         this.log = log;
     }
